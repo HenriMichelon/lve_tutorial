@@ -49,6 +49,8 @@ add_executable(${PROJECT_NAME}
         src/ze_app.cpp
         src/ze_pipeline.hpp
         src/ze_pipeline.cpp
+        src/ze_device.hpp
+        src/ze_device.cpp
 )
 
 find_package(Vulkan REQUIRED)
