@@ -47,10 +47,12 @@ add_executable(${PROJECT_NAME}
         src/ze_window.cpp
         src/ze_app.hpp
         src/ze_app.cpp
+        src/ze_pipeline.hpp
+        src/ze_pipeline.cpp
 )
 
 find_package(Vulkan REQUIRED)
-#add_shaders(${PROJECT_NAME} src/shaders/shader.vert src/shaders/shader.frag)
+add_shaders(${PROJECT_NAME} src/shaders/simple_shader.frag src/shaders/simple_shader.vert)
 target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan)
 

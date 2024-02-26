@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ze_window.hpp"
+#include "ze_pipeline.hpp"
 
 namespace ze {
 
@@ -14,6 +15,7 @@ namespace ze {
 
     private:
         ZeWindow zeWindow {WIDTH, HEIGHT, "Ze Vulkan"};
+        ZePipeline zePipeline{ "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv"};
     };
 
 }
