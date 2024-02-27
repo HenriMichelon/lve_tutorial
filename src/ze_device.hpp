@@ -35,7 +35,8 @@ class ZeDevice {
 
   // Not copyable or movable
   ZeDevice(const ZeDevice &) = delete;
-  void operator=(const ZeDevice &) = delete;
+  ZeDevice& operator=(const ZeDevice &) = delete;
+
   ZeDevice(ZeDevice &&) = delete;
   ZeDevice &operator=(ZeDevice &&) = delete;
 
