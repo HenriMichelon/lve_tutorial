@@ -5,6 +5,7 @@
 namespace ze {
 
     ZeApp::ZeApp() {
+        loadModels();
         createPipelineLayout();
         createPipeline();
         createCommandsBuffers();
@@ -21,6 +22,15 @@ namespace ze {
             drawFrame();
         }
         vkDeviceWaitIdle(zeDevice.device());
+    }
+
+    void ZeApp::loadModels() {
+        std::vector<ZeModel::Vertex> vertices {
+                {{0.0f, -0.5f}},
+                {{0.5f, 0.5f}},
+                {{-0.5f, 0.5f}}
+        };
+        zeModel = std::make_unique<ZeModel>(zeDevice, vertices);
     }
 
     void ZeApp::createPipelineLayout() {
@@ -79,8 +89,10 @@ namespace ze {
             renderPassBeginInfo.pClearValues = clearValues.data();
 
             vkCmdBeginRenderPass(commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
             zePipeline->bind(commandBuffers[i]);
-            vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+            zeModel->bind(commandBuffers[i]);
+            zeModel->draw(commandBuffers[i]);
 
             vkCmdEndRenderPass(commandBuffers[i]);
             if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {

@@ -53,6 +53,8 @@ add_executable(${PROJECT_NAME}
         src/ze_device.cpp
         src/ze_swap_chain.hpp
         src/ze_swap_chain.cpp
+        src/ze_model.hpp
+        src/ze_model.cpp
 )
 
 find_package(Vulkan REQUIRED)

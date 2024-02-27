@@ -4,6 +4,7 @@
 #include "ze_pipeline.hpp"
 #include "ze_device.hpp"
 #include "ze_swap_chain.hpp"
+#include "ze_model.hpp"
 
 #include <memory>
 #include <vector>
@@ -24,6 +25,7 @@ namespace ze {
         void run();
 
     private:
+        void loadModels();
         void createPipelineLayout();
         void createPipeline();
         void createCommandsBuffers();
@@ -36,6 +38,7 @@ namespace ze {
         std::unique_ptr<ZePipeline> zePipeline;
         VkPipelineLayout  pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
+        std::unique_ptr<ZeModel> zeModel;
 
     };
 
