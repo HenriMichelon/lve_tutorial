@@ -4,7 +4,7 @@
 #include "ze_pipeline.hpp"
 #include "ze_device.hpp"
 #include "ze_swap_chain.hpp"
-#include "ze_model.hpp"
+#include "ze_game_object.hpp"
 
 #include <memory>
 #include <vector>
@@ -25,7 +25,7 @@ namespace ze {
         void run();
 
     private:
-        void loadModels();
+        void loadGameObjects();
         void createPipelineLayout();
         void createPipeline();
         void createCommandsBuffers();
@@ -33,6 +33,7 @@ namespace ze {
         void drawFrame();
         void recreateSwapChain();
         void recordCommandBuffer(int imageIndex);
+        void renderGameObjects(VkCommandBuffer commandBufffer);
 
         ZeWindow zeWindow {WIDTH, HEIGHT, "Ze Vulkan"};
         ZeDevice zeDevice { zeWindow };
@@ -41,9 +42,7 @@ namespace ze {
         std::unique_ptr<ZePipeline> zePipeline;
         VkPipelineLayout  pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
-        std::unique_ptr<ZeModel> zeModel;
-
-
+        std::vector<ZeGameObject> gameObjects;
     };
 
 }
