@@ -1,8 +1,18 @@
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+
 #include "ze_app.hpp"
+
 #include <stdexcept>
 #include <array>
 
 namespace ze {
+
+    struct SimplePushConstantData {
+         glm::vec2 offset;
+        alignas(16) glm::vec3 color;
+    };
 
     ZeApp::ZeApp() {
         loadModels();
@@ -34,12 +44,17 @@ namespace ze {
     }
 
     void ZeApp::createPipelineLayout() {
+        VkPushConstantRange pushConstantRange{};
+        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        pushConstantRange.offset = 0;
+        pushConstantRange.size = sizeof(SimplePushConstantData);
+
         VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{};
         pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutCreateInfo.setLayoutCount = 0;
         pipelineLayoutCreateInfo.pSetLayouts = nullptr;
-        pipelineLayoutCreateInfo.pushConstantRangeCount = 0;
-        pipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
+        pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
+        pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
         if (vkCreatePipelineLayout(zeDevice.device(), &pipelineLayoutCreateInfo, nullptr,&pipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout");
         }
@@ -75,6 +90,9 @@ namespace ze {
     }
 
     void ZeApp::recordCommandBuffer(int imageIndex) {
+        static int frame = 0;
+        frame = (frame + 1) % 100;
+
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         if (vkBeginCommandBuffer(commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS) {
@@ -89,7 +107,7 @@ namespace ze {
         renderPassBeginInfo.renderArea.extent = zeSwapChain->getSwapChainExtent();
 
         std::array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = {0.1f, 0.1f, 0.1f};
+        clearValues[0].color = {0.01f, 0.01f, 0.01f, 1.0f};
         clearValues[1].depthStencil = { 1.0f,  0 };
         renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
         renderPassBeginInfo.pClearValues = clearValues.data();
@@ -109,7 +127,19 @@ namespace ze {
 
         zePipeline->bind(commandBuffers[imageIndex]);
         zeModel->bind(commandBuffers[imageIndex]);
-        zeModel->draw(commandBuffers[imageIndex]);
+
+        for (int j = 0; j < 4; j++) {
+            SimplePushConstantData push{};
+            push.offset = { -0.5f + frame * 0.02f, -0.4f + j * 0.25f };
+            push.color = { 0.0f, 0.0f, 0.2f + 0.2f * j };
+            vkCmdPushConstants(commandBuffers[imageIndex],
+                               pipelineLayout,
+                               VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                               0,
+                               sizeof(SimplePushConstantData),
+                               &push);
+            zeModel->draw(commandBuffers[imageIndex]);
+        }
 
         vkCmdEndRenderPass(commandBuffers[imageIndex]);
         if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS) {
