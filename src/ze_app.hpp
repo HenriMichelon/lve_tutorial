@@ -40,6 +40,12 @@ namespace ze {
         std::vector<VkCommandBuffer> commandBuffers;
         std::unique_ptr<ZeModel> zeModel;
 
+        void sierpinski( std::vector<ZeModel::Vertex> &vertices,
+                         int depth,
+                         glm::vec2 left,
+                         glm::vec2 right,
+                         glm::vec2 top);
+
     };
 
 }
