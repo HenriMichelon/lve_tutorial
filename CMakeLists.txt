@@ -65,6 +65,7 @@ add_executable(${PROJECT_NAME}
         src/keyboard_movement_controller.hpp
         src/keyboard_movement_controller.cpp
         src/tiny_obj_loader.h
+        src/ze_utils.hpp
 )
 
 find_package(Vulkan REQUIRED)
