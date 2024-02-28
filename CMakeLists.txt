@@ -56,6 +56,10 @@ add_executable(${PROJECT_NAME}
         src/ze_model.hpp
         src/ze_model.cpp
         src/ze_game_object.hpp
+        src/ze_renderer.hpp
+        src/ze_renderer.cpp
+        src/simple_render_system.hpp
+        src/simple_render_system.cpp
 )
 
 find_package(Vulkan REQUIRED)

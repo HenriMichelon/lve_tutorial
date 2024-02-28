@@ -1,10 +1,9 @@
 #pragma once
 
 #include "ze_window.hpp"
-#include "ze_pipeline.hpp"
 #include "ze_device.hpp"
-#include "ze_swap_chain.hpp"
 #include "ze_game_object.hpp"
+#include "ze_renderer.hpp"
 
 #include <memory>
 #include <vector>
@@ -26,22 +25,11 @@ namespace ze {
 
     private:
         void loadGameObjects();
-        void createPipelineLayout();
-        void createPipeline();
-        void createCommandsBuffers();
-        void freeCommanBuffers();
-        void drawFrame();
-        void recreateSwapChain();
-        void recordCommandBuffer(int imageIndex);
-        void renderGameObjects(VkCommandBuffer commandBufffer);
 
         ZeWindow zeWindow {WIDTH, HEIGHT, "Ze Vulkan"};
         ZeDevice zeDevice { zeWindow };
+        ZeRenderer zeRenderer{zeWindow, zeDevice};
 
-        std::unique_ptr<ZeSwapChain> zeSwapChain;
-        std::unique_ptr<ZePipeline> zePipeline;
-        VkPipelineLayout  pipelineLayout;
-        std::vector<VkCommandBuffer> commandBuffers;
         std::vector<ZeGameObject> gameObjects;
     };
 

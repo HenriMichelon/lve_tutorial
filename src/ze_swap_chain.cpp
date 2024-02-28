@@ -299,6 +299,7 @@ void ZeSwapChain::createFramebuffers() {
 
 void ZeSwapChain::createDepthResources() {
   VkFormat depthFormat = findDepthFormat();
+  swapChainDepthFormat = depthFormat;
   VkExtent2D swapChainExtent = getSwapChainExtent();
 
   depthImages.resize(imageCount());

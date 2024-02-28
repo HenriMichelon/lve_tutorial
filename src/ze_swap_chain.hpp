@@ -40,6 +40,11 @@ class ZeSwapChain {
   VkResult acquireNextImage(uint32_t *imageIndex);
   VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
+  bool compareSwapFormats(const ZeSwapChain &swapChain) const {
+      return swapChain.swapChainImageFormat == swapChainImageFormat &&
+                swapChain.swapChainDepthFormat == swapChainDepthFormat;
+  }
+
  private:
   void init();
   void createSwapChain();
@@ -57,6 +62,7 @@ class ZeSwapChain {
   VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
 
   VkFormat swapChainImageFormat;
+  VkFormat  swapChainDepthFormat;
   VkExtent2D swapChainExtent;
 
   std::vector<VkFramebuffer> swapChainFramebuffers;
