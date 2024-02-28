@@ -21,12 +21,13 @@ namespace ze {
     void ZeApp::run() {
         SimpleRenderSystem simpleRenderSystem{zeDevice, zeRenderer.getSwapChainRenderPass()};
         ZeCamera camera{};
+        camera.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f));
 
         while (!zeWindow.shouldClose()) {
             glfwPollEvents();
             float aspect = zeRenderer.getAspectRatio();
             //camera.setOrthographicProjection(-aspect,  aspect, -1, 1, -1, 1);
-            camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
+            camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 100 .0f);
 
             if (auto commandBuffer = zeRenderer.beginFrame()) {
                 zeRenderer.beginSwapChainRenderPass(commandBuffer);
