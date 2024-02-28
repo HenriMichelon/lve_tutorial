@@ -60,6 +60,8 @@ add_executable(${PROJECT_NAME}
         src/ze_renderer.cpp
         src/simple_render_system.hpp
         src/simple_render_system.cpp
+        src/ze_camera.hpp
+        src/ze_camera.cpp
 )
 
 find_package(Vulkan REQUIRED)

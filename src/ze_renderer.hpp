@@ -19,6 +19,7 @@ namespace ze {
         ZeRenderer &operator=(const ZeRenderer&) = delete;
 
         VkRenderPass getSwapChainRenderPass() const { return zeSwapChain->getRenderPass(); }
+        float getAspectRatio() const { return zeSwapChain->extentAspectRatio(); }
         bool isFrameInProgress() const { return isFrameStarted; }
 
         VkCommandBuffer getCurrentCommandBUffer() const {

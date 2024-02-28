@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
+#include "ze_camera.hpp"
 #include "ze_app.hpp"
 #include "simple_render_system.hpp"
 
@@ -19,12 +20,17 @@ namespace ze {
 
     void ZeApp::run() {
         SimpleRenderSystem simpleRenderSystem{zeDevice, zeRenderer.getSwapChainRenderPass()};
+        ZeCamera camera{};
 
         while (!zeWindow.shouldClose()) {
             glfwPollEvents();
+            float aspect = zeRenderer.getAspectRatio();
+            //camera.setOrthographicProjection(-aspect,  aspect, -1, 1, -1, 1);
+            camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
+
             if (auto commandBuffer = zeRenderer.beginFrame()) {
                 zeRenderer.beginSwapChainRenderPass(commandBuffer);
-                simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects);
+                simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
                 zeRenderer.endSwapChainRenderPass(commandBuffer);
                 zeRenderer.endFrame();
             }
@@ -93,7 +99,7 @@ namespace ze {
         std::shared_ptr<ZeModel> zeModel = createCubeModel(zeDevice, {0.0f, 0.0f, 0.0f} );
         auto cube = ZeGameObject::createGameObject();
         cube.model = zeModel;
-        cube.transform.translation = { 0.0f, 0.0f, 0.5f };
+        cube.transform.translation = { 0.0f, 0.0f, 2.5f };
         cube.transform.scale = { 0.5f, 0.5f, 0.5f};
         gameObjects.push_back(std::move(cube));
     }
