@@ -56,11 +56,11 @@ namespace ze {
 
 
     void ZeApp::loadGameObjects() {
-        std::shared_ptr<ZeModel> zeModel = ZeModel::createModelFromFile(zeDevice, "models/smooth_vase.obj");
+        std::shared_ptr<ZeModel> zeModel = ZeModel::createModelFromFile(zeDevice, "models/wood_shield_1.obj");
         auto cube = ZeGameObject::createGameObject();
         cube.model = zeModel;
-        cube.transform.translation = { 0.0f, 0.0f, 2.5f };
-        cube.transform.scale = { 0.5f, 0.5f, 0.5f};
+        cube.transform.translation = { 0.0f, 0.0f, 0.5f };
+        cube.transform.scale = glm::vec3{5.0f };
         gameObjects.push_back(std::move(cube));
     }
 
