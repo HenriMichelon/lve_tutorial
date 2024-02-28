@@ -467,6 +467,7 @@ void ZeDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
 }
 
 void ZeDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+    // TODO : use memory barrier
   VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
   VkBufferCopy copyRegion{};
