@@ -62,6 +62,8 @@ add_executable(${PROJECT_NAME}
         src/simple_render_system.cpp
         src/ze_camera.hpp
         src/ze_camera.cpp
+        src/keyboard_movement_controller.hpp
+        src/keyboard_movement_controller.cpp
 )
 
 find_package(Vulkan REQUIRED)

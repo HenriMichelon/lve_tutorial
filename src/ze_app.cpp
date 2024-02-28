@@ -6,8 +6,10 @@
 #include "ze_camera.hpp"
 #include "ze_app.hpp"
 #include "simple_render_system.hpp"
+#include "keyboard_movement_controller.hpp"
 
 #include <array>
+#include <chrono>
 
 namespace ze {
 
@@ -21,13 +23,26 @@ namespace ze {
     void ZeApp::run() {
         SimpleRenderSystem simpleRenderSystem{zeDevice, zeRenderer.getSwapChainRenderPass()};
         ZeCamera camera{};
-        camera.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f));
+
+        auto cameraObject = ZeGameObject::createGameObject();
+        KeyboardMovementController cameraController{};
+
+        auto currentTime = std::chrono::high_resolution_clock::now();
 
         while (!zeWindow.shouldClose()) {
             glfwPollEvents();
+
+            auto newTime =  std::chrono::high_resolution_clock::now();
+            float delta = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+            currentTime = newTime;
+
+            //delta = glm::min(delta, MAX_FRAME_TIME);
+
+            cameraController.moveInPlaneXZ(zeWindow.getGLFWwindow(), delta, cameraObject);
+            camera.setViewYXZ(cameraObject.transform.translation, cameraObject.transform.rotation);
+
             float aspect = zeRenderer.getAspectRatio();
-            //camera.setOrthographicProjection(-aspect,  aspect, -1, 1, -1, 1);
-            camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 100 .0f);
+            camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 100.0f);
 
             if (auto commandBuffer = zeRenderer.beginFrame()) {
                 zeRenderer.beginSwapChainRenderPass(commandBuffer);
