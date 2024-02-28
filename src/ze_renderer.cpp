@@ -93,10 +93,8 @@ namespace ze {
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || zeWindow.wasWindowResized()) {
             zeWindow.resetWindowResizedFlag();
             recreateSwapChain();
-        }
-        if (result != VK_SUCCESS) {
+        } else if (result != VK_SUCCESS) {
             throw std::runtime_error("failed to present swap chain");
-
         }
         isFrameStarted = false;
         currentFrameIndex = (currentFrameIndex + 1) % ZeSwapChain::MAX_FRAMES_IN_FLIGHT;
