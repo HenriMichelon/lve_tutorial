@@ -19,7 +19,12 @@ namespace ze {
             static std::vector<VkVertexInputAttributeDescription> getAttributeDescription();
         };
 
-        ZeModel(ZeDevice &device, const std::vector<Vertex> &vertices);
+        struct Builder {
+            std::vector<Vertex> vertices{};
+            std::vector<uint32_t> indices{};
+        };
+
+        ZeModel(ZeDevice &device, const ZeModel::Builder &builder);
         ~ZeModel();
 
         ZeModel(const ZeModel&) = delete;
@@ -29,11 +34,19 @@ namespace ze {
         void draw(VkCommandBuffer commandBuffer);
 
     private:
+        void createVertexBuffers(const std::vector<Vertex> &vertices);
+        void createIndexBuffers(const std::vector<uint32_t> &indices);
+
         ZeDevice& zeDevice;
+
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         uint32_t  vertexCount;
 
-        void createVertexBuffers(const std::vector<Vertex> &vertices);
+        bool hasIndexBuffer{false};
+        VkBuffer indexBuffer;
+        VkDeviceMemory indexBufferMemory;
+        uint32_t  indexCount;
+
     };
 }
