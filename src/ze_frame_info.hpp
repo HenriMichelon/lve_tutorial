@@ -11,6 +11,7 @@ namespace ze {
         float frameTime;
         VkCommandBuffer commandBuffer;
         ZeCamera &camera;
+        VkDescriptorSet globalDescriptorSet;
     };
 
 }

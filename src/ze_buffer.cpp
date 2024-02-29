@@ -29,10 +29,10 @@ namespace ze {
         return instanceSize;
     }
 
-    ZeBuffer::ZeBuffer(ze::ZeDevice &device, VkDeviceSize instanceSize, uint32_t instanceCount,
+    ZeBuffer::ZeBuffer(ZeDevice &device, VkDeviceSize instanceSize, uint32_t instanceCount,
                        VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags,
                        VkDeviceSize minOffsetAlignment)
-            : ZeDevice{device},
+            : zeDevice{device},
               instanceSize{instanceSize},
               instanceCount{instanceCount},
               usageFlags{usageFlags},
@@ -44,8 +44,8 @@ namespace ze {
 
     ZeBuffer::~ZeBuffer() {
         unmap();
-        vkDestroyBuffer(ZeDevice.device(), buffer, nullptr);
-        vkFreeMemory(ZeDevice.device(), memory, nullptr);
+        vkDestroyBuffer(zeDevice.device(), buffer, nullptr);
+        vkFreeMemory(zeDevice.device(), memory, nullptr);
     }
 
 /**
@@ -59,7 +59,7 @@ namespace ze {
  */
     VkResult ZeBuffer::map(VkDeviceSize size, VkDeviceSize offset) {
         assert(buffer && memory && "Called map on buffer before create");
-        return vkMapMemory(ZeDevice.device(), memory, offset, size, 0, &mapped);
+        return vkMapMemory(zeDevice.device(), memory, offset, size, 0, &mapped);
     }
 
 /**
@@ -69,7 +69,7 @@ namespace ze {
  */
     void ZeBuffer::unmap() {
         if (mapped) {
-            vkUnmapMemory(ZeDevice.device(), memory);
+            vkUnmapMemory(zeDevice.device(), memory);
             mapped = nullptr;
         }
     }
@@ -112,7 +112,7 @@ namespace ze {
         mappedRange.memory = memory;
         mappedRange.offset = offset;
         mappedRange.size = size;
-        return vkFlushMappedMemoryRanges(ZeDevice.device(), 1, &mappedRange);
+        return vkFlushMappedMemoryRanges(zeDevice.device(), 1, &mappedRange);
     }
 
 /**
@@ -132,7 +132,7 @@ namespace ze {
         mappedRange.memory = memory;
         mappedRange.offset = offset;
         mappedRange.size = size;
-        return vkInvalidateMappedMemoryRanges(ZeDevice.device(), 1, &mappedRange);
+        return vkInvalidateMappedMemoryRanges(zeDevice.device(), 1, &mappedRange);
     }
 
 /**

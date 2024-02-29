@@ -21,6 +21,10 @@ namespace ze {
     };
 
     ZeApp::ZeApp() {
+        globalPool = ZeDescriptorPool::Builder(zeDevice)
+                .setMaxSets(ZeSwapChain::MAX_FRAMES_IN_FLIGHT)
+                .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, ZeSwapChain::MAX_FRAMES_IN_FLIGHT)
+                .build();
         loadGameObjects();
     }
 
@@ -40,8 +44,19 @@ namespace ze {
             uboBuffers[i]->map();
         }
 
+        auto globalSetLayout = ZeDescriptorSetLayout::Builder(zeDevice)
+                .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+                .build();
 
-        SimpleRenderSystem simpleRenderSystem{zeDevice, zeRenderer.getSwapChainRenderPass()};
+        std::vector<VkDescriptorSet> globalDescriptorSets(ZeSwapChain::MAX_FRAMES_IN_FLIGHT);
+        for (int i = 0; i < globalDescriptorSets.size(); i++) {
+            auto bufferInfo = uboBuffers[i]->descriptorInfo();
+            ZeDescriptorWriter(*globalSetLayout, *globalPool)
+                .writeBuffer(0, &bufferInfo)
+                .build(globalDescriptorSets[i]);
+        }
+
+        SimpleRenderSystem simpleRenderSystem{zeDevice, zeRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
         ZeCamera camera{};
 
         auto cameraObject = ZeGameObject::createGameObject();
@@ -70,7 +85,8 @@ namespace ze {
                     frameIndex,
                     delta,
                     commandBuffer,
-                    camera
+                    camera,
+                    globalDescriptorSets[frameIndex]
                 };
 
                 // update

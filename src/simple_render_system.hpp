@@ -13,7 +13,7 @@ namespace ze {
 
     class SimpleRenderSystem {
     public:
-        SimpleRenderSystem(ZeDevice &device, VkRenderPass renderPass);
+        SimpleRenderSystem(ZeDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
         ~SimpleRenderSystem();
 
         SimpleRenderSystem(const SimpleRenderSystem&) = delete;
@@ -23,7 +23,7 @@ namespace ze {
                                std::vector<ZeGameObject> &gameObjects);
 
     private:
-        void createPipelineLayout();
+        void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void createPipeline(VkRenderPass renderPass);
 
         ZeDevice &zeDevice;

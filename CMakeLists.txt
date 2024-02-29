@@ -70,6 +70,8 @@ add_executable(${PROJECT_NAME}
         src/ze_buffer.hpp
         src/ze_buffer.cpp
         src/ze_frame_info.hpp
+        src/ze_descriptors.hpp
+        src/ze_descriptors.cpp
 )
 
 find_package(Vulkan REQUIRED)
