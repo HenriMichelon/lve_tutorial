@@ -28,13 +28,6 @@ namespace  ze {
     }
 
     ZeModel::~ZeModel() {
-        vkDestroyBuffer(zeDevice.device(), vertexBuffer, nullptr);
-        vkFreeMemory(zeDevice.device(), vertexBufferMemory, nullptr);
-
-        if (hasIndexBuffer) {
-            vkDestroyBuffer(zeDevice.device(), indexBuffer, nullptr);
-            vkFreeMemory(zeDevice.device(), indexBufferMemory, nullptr);
-        }
     }
 
     std::unique_ptr<ZeModel> ZeModel::createModelFromFile(ze::ZeDevice &device, const std::string &filepath) {
@@ -47,34 +40,26 @@ namespace  ze {
         vertexCount = static_cast<uint32_t>(vertices.size());
         assert(vertexCount >= 3 && "Vertex count must be at leat 3");
         VkDeviceSize bufferSize = sizeof (vertices[0]) * vertexCount;
+        uint32_t  vertexSize = sizeof(vertices[0]);
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
+        ZeBuffer stagingBuffer {
+            zeDevice,
+            vertexSize,
+            vertexCount,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+        };
+        stagingBuffer.map();
+        stagingBuffer.writeToBuffer((void*)vertices.data());
 
-        zeDevice.createBuffer(
-                bufferSize,
-                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                stagingBuffer,
-                stagingBufferMemory
-        );
-
-        void *data;
-        vkMapMemory(zeDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
-        vkUnmapMemory(zeDevice.device(), stagingBufferMemory);
-
-        zeDevice.createBuffer(
-                bufferSize,
+        vertexBuffer = std::make_unique<ZeBuffer>(
+                zeDevice,
+                vertexSize,
+                vertexCount,
                 VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                vertexBuffer,
-                vertexBufferMemory
-        );
-        zeDevice.copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
-
-        vkDestroyBuffer(zeDevice.device(), stagingBuffer, nullptr);
-        vkFreeMemory(zeDevice.device(), stagingBufferMemory, nullptr);
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+                );
+        zeDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
     }
 
     void ZeModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
@@ -85,33 +70,25 @@ namespace  ze {
         }
 
         VkDeviceSize bufferSize = sizeof (indices[0]) * indexCount;
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
+        uint32_t  indexSize = sizeof(indices[0]);
+        ZeBuffer stagingBuffer {
+            zeDevice,
+            indexSize,
+            indexCount,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+        };
+        stagingBuffer.map();
+        stagingBuffer.writeToBuffer((void*)indices.data());
 
-        zeDevice.createBuffer(
-                bufferSize,
-                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                stagingBuffer,
-                stagingBufferMemory
-        );
-
-        void *data;
-        vkMapMemory(zeDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, indices.data(), static_cast<size_t>(bufferSize));
-        vkUnmapMemory(zeDevice.device(), stagingBufferMemory);
-
-        zeDevice.createBuffer(
-                bufferSize,
+        indexBuffer = std::make_unique<ZeBuffer>(
+                zeDevice,
+                indexSize,
+                indexCount,
                 VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                indexBuffer,
-                indexBufferMemory
-        );
-        zeDevice.copyBuffer(stagingBuffer, indexBuffer, bufferSize);
-
-        vkDestroyBuffer(zeDevice.device(), stagingBuffer, nullptr);
-        vkFreeMemory(zeDevice.device(), stagingBufferMemory, nullptr);
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+                );
+        zeDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
     }
 
     void ZeModel::draw(VkCommandBuffer commandBuffer) {
@@ -123,11 +100,11 @@ namespace  ze {
     }
 
     void ZeModel::bind(VkCommandBuffer commandBuffer) {
-        VkBuffer buffers[] = { vertexBuffer };
+        VkBuffer buffers[] = { vertexBuffer->getBuffer() };
         VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
         if (hasIndexBuffer) {
-            vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
         }
     }
 

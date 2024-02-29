@@ -67,6 +67,9 @@ add_executable(${PROJECT_NAME}
         src/tiny_obj_loader.h
         src/ze_utils.hpp
         src/ze_game_object.cpp
+        src/ze_buffer.hpp
+        src/ze_buffer.cpp
+        src/ze_frame_info.hpp
 )
 
 find_package(Vulkan REQUIRED)

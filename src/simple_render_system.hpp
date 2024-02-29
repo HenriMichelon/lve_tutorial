@@ -4,6 +4,7 @@
 #include "ze_pipeline.hpp"
 #include "ze_device.hpp"
 #include "ze_game_object.hpp"
+#include "ze_frame_info.hpp"
 
 #include <memory>
 #include <vector>
@@ -18,9 +19,8 @@ namespace ze {
         SimpleRenderSystem(const SimpleRenderSystem&) = delete;
         SimpleRenderSystem &operator=(const SimpleRenderSystem&) = delete;
 
-        void renderGameObjects(VkCommandBuffer commandBufffer,
-                               std::vector<ZeGameObject> &gameObjects,
-                               const ZeCamera &camera);
+        void renderGameObjects(FrameInfo &frameInfo,
+                               std::vector<ZeGameObject> &gameObjects);
 
     private:
         void createPipelineLayout();

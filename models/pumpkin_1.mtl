@@ -1,7 +1,7 @@
-# Blender 4.0.2 MTL File: 'wood_shield_1.blend'
+# Blender 4.0.2 MTL File: 'pumpkin_1.blend'
 # www.blender.org
 
-newmtl standardSurface1
+newmtl pumpkin_sss_assets
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000

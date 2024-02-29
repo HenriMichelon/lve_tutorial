@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ze_device.hpp"
+#include "ze_buffer.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -50,14 +51,12 @@ namespace ze {
 
         ZeDevice& zeDevice;
 
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
-        uint32_t  vertexCount;
+            std::unique_ptr<ZeBuffer> vertexBuffer;
+            uint32_t  vertexCount;
 
-        bool hasIndexBuffer{false};
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
-        uint32_t  indexCount;
+            bool hasIndexBuffer{false};
+            std::unique_ptr<ZeBuffer> indexBuffer;
+            uint32_t  indexCount;
 
     };
 }
