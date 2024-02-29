@@ -11,6 +11,7 @@
 
 #include <array>
 #include <chrono>
+#include <numeric>
 
 namespace ze {
 
@@ -27,15 +28,18 @@ namespace ze {
     }
 
     void ZeApp::run() {
-        ZeBuffer globalUboBuffer {
-            zeDevice,
-            sizeof(GlobalUbo),
-            ZeSwapChain::MAX_FRAMES_IN_FLIGHT,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-            zeDevice.properties.limits.minUniformBufferOffsetAlignment
-        };
-        globalUboBuffer.map();
+        std::vector<std::unique_ptr<ZeBuffer>> uboBuffers(ZeSwapChain::MAX_FRAMES_IN_FLIGHT);
+        for(int i = 0; i < uboBuffers.size(); i++) {
+            uboBuffers[i] = std::make_unique<ZeBuffer>(
+                    zeDevice,
+                    sizeof(GlobalUbo),
+                    1,
+                    VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+            );
+            uboBuffers[i]->map();
+        }
+
 
         SimpleRenderSystem simpleRenderSystem{zeDevice, zeRenderer.getSwapChainRenderPass()};
         ZeCamera camera{};
@@ -72,8 +76,8 @@ namespace ze {
                 // update
                 GlobalUbo ubo{};
                 ubo.projectionView = camera.getProjection() * camera.getView();
-                globalUboBuffer.writeToIndex(&ubo, frameIndex);
-                globalUboBuffer.flushIndex(frameIndex);
+                uboBuffers[frameIndex]->writeToBuffer(&ubo);
+                uboBuffers[frameIndex]->flush();
 
                 // render
                 zeRenderer.beginSwapChainRenderPass(commandBuffer);
