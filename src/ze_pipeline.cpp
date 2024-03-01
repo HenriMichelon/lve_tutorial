@@ -44,8 +44,8 @@ namespace ze {
         shaderStages[1].pNext = nullptr;
         shaderStages[1].pSpecializationInfo = nullptr;
 
-        auto bindingDescription = ZeModel::Vertex::getBindingDescription();
-        auto attributeDescription = ZeModel::Vertex::getAttributeDescription();
+        auto& bindingDescription = configInfo.bindingDescriptions;
+        auto& attributeDescription = configInfo.attributeDescriptions;
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -161,6 +161,9 @@ namespace ze {
         configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
         configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t >(configInfo.dynamicStateEnables.size());
         configInfo.dynamicStateInfo.flags = 0;
+
+        configInfo.bindingDescriptions = ZeModel::Vertex::getBindingDescription();
+        configInfo.attributeDescriptions = ZeModel::Vertex::getAttributeDescription();
     }
 
     std::vector<char> ZePipeline::readFile(const std::string& filepath) {

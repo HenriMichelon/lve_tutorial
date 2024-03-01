@@ -43,6 +43,8 @@ namespace ze {
 
         PipelineConfigInfo pipelineConfigInfo{};
         ZePipeline::defaultPipelineConfigInfo(pipelineConfigInfo);
+        pipelineConfigInfo.bindingDescriptions.clear();
+        pipelineConfigInfo.attributeDescriptions.clear();
         pipelineConfigInfo.renderPass = renderPass;
         pipelineConfigInfo.pipelineLayout = pipelineLayout;
         zePipeline = std::make_unique<ZePipeline>(
