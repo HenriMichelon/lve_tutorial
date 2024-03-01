@@ -16,7 +16,7 @@ project(glm VERSION ${GLM_VERSION} LANGUAGES CXX)
 message(STATUS "GLM: Version " ${GLM_VERSION})
 
 set(GLM_IS_MASTER_PROJECT OFF)
-if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+if (${CMAKE_SOURCE_DIR} STREQUAL .)
 	set(GLM_IS_MASTER_PROJECT ON)
 endif()
 
@@ -277,7 +277,7 @@ if (GLM_BUILD_INSTALL)
 	)
 
 	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+		"cmake/cmake_uninstall.cmake.in"
 		"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
 		IMMEDIATE @ONLY
 	)

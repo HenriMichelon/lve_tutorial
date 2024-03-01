@@ -1,3 +1,4 @@
+include(.env.cmake)
 function(add_shaders TARGET_NAME)
     set(SHADER_SOURCE_FILES ${ARGN}) # the rest of arguments to this function will be assigned as shader source files
     set(SHADER_BINARIES "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
@@ -36,7 +37,6 @@ function(add_shaders TARGET_NAME)
     )
 endfunction()
 
-set(ENV{VULKAN_SDK} "C:\\VulkanSDK\\1.3.275.0")
 cmake_minimum_required(VERSION 3.27)
 project(vlk_test)
 set(CMAKE_CXX_STANDARD 17)
@@ -58,13 +58,10 @@ add_executable(${PROJECT_NAME}
         src/ze_game_object.hpp
         src/ze_renderer.hpp
         src/ze_renderer.cpp
-        src/simple_render_system.hpp
-        src/simple_render_system.cpp
         src/ze_camera.hpp
         src/ze_camera.cpp
         src/keyboard_movement_controller.hpp
         src/keyboard_movement_controller.cpp
-        src/tiny_obj_loader.h
         src/ze_utils.hpp
         src/ze_game_object.cpp
         src/ze_buffer.hpp
@@ -72,17 +69,26 @@ add_executable(${PROJECT_NAME}
         src/ze_frame_info.hpp
         src/ze_descriptors.hpp
         src/ze_descriptors.cpp
+        src/systems/point_light_system.cpp
+        src/systems/simple_render_system.cpp
 )
 
 find_package(Vulkan REQUIRED)
-add_shaders(${PROJECT_NAME} src/shaders/simple_shader.frag src/shaders/simple_shader.vert)
+file(GLOB_RECURSE GLSL_SOURCE_FILES
+        "${PROJECT_SOURCE_DIR}/src/shaders/*.frag"
+        "${PROJECT_SOURCE_DIR}/src/shaders/*.vert"
+)
+add_shaders(${PROJECT_NAME} ${GLSL_SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan)
 
-add_subdirectory(glfw-3.3.9)
-include_directories(glfw-3.3.9/include)
+include_directories(${TINYOBJ_PATH})
+
+add_subdirectory(${GLFW_PATH})
+include_directories(${GLFW_PATH}/include)
 target_link_libraries(${PROJECT_NAME} glfw)
 
-add_subdirectory(glm-master)
-include_directories(glm-master)
+add_subdirectory(${GLM_PATH})
+include_directories(${GLM_PATH})
 target_link_libraries(${PROJECT_NAME} glm)
+

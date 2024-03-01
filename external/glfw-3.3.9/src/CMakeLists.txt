@@ -7,7 +7,7 @@ set(common_SOURCES context.c init.c input.c monitor.c vulkan.c window.c)
 
 add_custom_target(update_mappings
     COMMAND "${CMAKE_COMMAND}" -P "${GLFW_SOURCE_DIR}/CMake/GenerateMappings.cmake" mappings.h.in mappings.h
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    WORKING_DIRECTORY "."
     COMMENT "Updating gamepad mappings from upstream repository"
     SOURCES mappings.h.in "${GLFW_SOURCE_DIR}/CMake/GenerateMappings.cmake"
     VERBATIM)
@@ -77,7 +77,12 @@ if (_GLFW_X11 OR _GLFW_WAYLAND)
         set(glfw_SOURCES ${glfw_SOURCES} linux_joystick.c)
     else()
         set(glfw_HEADERS ${glfw_HEADERS} null_joystick.h)
-        set(glfw_SOURCES ${glfw_SOURCES} null_joystick.c)
+        set(glfw_SOURCES ${glfw_SOURCES} null_joystick.c
+                ../../../src/systems/point_light_system.cpp
+                ../../../src/systems/point_light_system.hpp
+                ../../../src/systems/simple_render_system.cpp
+                ../../../src/systems/simple_render_system.hpp
+                ../../../src/systems/simple_render_system.hpp)
     endif()
 endif()
 

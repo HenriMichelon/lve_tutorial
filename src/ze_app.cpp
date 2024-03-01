@@ -6,7 +6,7 @@
 #include "ze_camera.hpp"
 #include "ze_app.hpp"
 #include "ze_buffer.hpp"
-#include "simple_render_system.hpp"
+#include "systems/simple_render_system.hpp"
 #include "keyboard_movement_controller.hpp"
 
 #include <array>
@@ -16,7 +16,8 @@
 namespace ze {
 
     struct GlobalUbo {
-        glm::mat4 projectionView{1.0f};
+        glm::mat4 projection{1.0f};
+        glm::mat4 view{1.0f};
         glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f}; // RGB + intensity
         glm::vec3 lightPosition{-1.0f};
         alignas(16) glm::vec4 lightColor{1.0f}; // RGB + intensity
@@ -99,7 +100,8 @@ namespace ze {
 
                 // update
                 GlobalUbo ubo{};
-                ubo.projectionView = camera.getProjection() * camera.getView();
+                ubo.projection = camera.getProjection();
+                ubo.view = camera.getView();
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameIndex]->flush();
 
