@@ -6,7 +6,7 @@
 #include "point_light_system.hpp"
 
 #include <stdexcept>
-#include <array>
+#include <map>
 
 namespace ze {
 
@@ -49,6 +49,8 @@ namespace ze {
 
         PipelineConfigInfo pipelineConfigInfo{};
         ZePipeline::defaultPipelineConfigInfo(pipelineConfigInfo);
+        ZePipeline::enableAlphaBlending(pipelineConfigInfo);
+
         pipelineConfigInfo.bindingDescriptions.clear();
         pipelineConfigInfo.attributeDescriptions.clear();
         pipelineConfigInfo.renderPass = renderPass;
@@ -83,6 +85,17 @@ namespace ze {
     }
 
     void PointLightSystem::render(FrameInfo &frameInfo) {
+        // sort lights
+        std::map<float, ZeGameObject::id_t > sorted;
+        for (auto& kv: frameInfo.gameObjects) {
+            auto &obj = kv.second;
+            if (obj.pointLight == nullptr) continue;
+            /// calculate distance
+            auto offset = frameInfo.camera.getPositin() - obj.transform.translation;
+            float disSquared = glm::dot(offset, offset);
+            sorted[disSquared] = obj.getId();
+        }
+
         zePipeline->bind(frameInfo.commandBuffer);
 
         vkCmdBindDescriptorSets(
@@ -95,9 +108,9 @@ namespace ze {
                 0,
                 nullptr
                 );
-        for (auto& kv: frameInfo.gameObjects) {
-            auto &obj = kv.second;
-            if (obj.pointLight == nullptr) continue;
+
+        for (auto it = sorted.begin(); it != sorted.end(); ++it) {
+            auto &obj = frameInfo.gameObjects.at(it->second);
             PointLightPushConstants push{};
             push.position = glm::vec4(obj.transform.translation, 1.0f);
             push.color = glm::vec4(obj.color, obj.pointLight->lightIntensity);

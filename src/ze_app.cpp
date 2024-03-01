@@ -66,8 +66,8 @@ namespace ze {
 
         auto cameraObject = ZeGameObject::createGameObject();
         cameraObject.transform.translation.z = -3.0f;
-        //cameraObject.transform.translation.y = -.5f;
-        //cameraObject.transform.rotation.x = -0.5f;
+        cameraObject.transform.translation.y = -1.5f;
+        cameraObject.transform.rotation.x = -0.5f;
         KeyboardMovementController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -109,8 +109,11 @@ namespace ze {
 
                 // render
                 zeRenderer.beginSwapChainRenderPass(commandBuffer);
+
+                // order here matters
                 simpleRenderSystem.renderGameObjects(frameInfo);
                 pointLightSystem.render(frameInfo);
+
                 zeRenderer.endSwapChainRenderPass(commandBuffer);
                 zeRenderer.endFrame();
             }
@@ -137,7 +140,7 @@ namespace ze {
         auto floor = ZeGameObject::createGameObject();
         floor.model = zeModel1;
         floor.transform.translation = { 0.0f, 0.5f, 0.0f };
-        floor.transform.scale = glm::vec3{1.0f };
+        floor.transform.scale = glm::vec3{2.0f };
         gameObjects.emplace(floor.getId(), std::move(floor));
 
         std::vector<glm::vec3> lightColors{
