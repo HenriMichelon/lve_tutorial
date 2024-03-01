@@ -16,8 +16,10 @@
 namespace ze {
 
     struct GlobalUbo {
-        alignas(16) glm::mat4 projectionView{1.0f};
-        alignas(16) glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f });
+        glm::mat4 projectionView{1.0f};
+        glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f}; // RGB + intensity
+        glm::vec3 lightPosition{-1.0f};
+        alignas(16) glm::vec4 lightColor{1.0f}; // RGB + intensity
     };
 
     ZeApp::ZeApp() {
@@ -60,6 +62,7 @@ namespace ze {
         ZeCamera camera{};
 
         auto cameraObject = ZeGameObject::createGameObject();
+        cameraObject.transform.translation.z = -2.5f;
         KeyboardMovementController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -108,11 +111,25 @@ namespace ze {
 
     void ZeApp::loadGameObjects() {
         std::shared_ptr<ZeModel> zeModel = ZeModel::createModelFromFile(zeDevice, "models/pumpkin_1.obj");
-        auto cube = ZeGameObject::createGameObject();
-        cube.model = zeModel;
-        cube.transform.translation = { 0.0f, 0.2f, 1.0f };
-        cube.transform.scale = glm::vec3{1.0f };
-        gameObjects.push_back(std::move(cube));
+        std::shared_ptr<ZeModel> zeModel1 = ZeModel::createModelFromFile(zeDevice, "models/quad.obj");
+
+        auto gameObject1 = ZeGameObject::createGameObject();
+        gameObject1.model = zeModel;
+        gameObject1.transform.translation = { 0.3f, 0.5f, 0.0f };
+        gameObject1.transform.scale = glm::vec3{1.2f };
+        gameObjects.push_back(std::move(gameObject1));
+
+        auto gameObject2 = ZeGameObject::createGameObject();
+        gameObject2.model = zeModel;
+        gameObject2.transform.translation = { -0.3f, 0.5f, 0.0f };
+        gameObject2.transform.scale = glm::vec3{1.2f };
+        gameObjects.push_back(std::move(gameObject2));
+
+        auto floor = ZeGameObject::createGameObject();
+        floor.model = zeModel1;
+        floor.transform.translation = { 0.0f, 0.5f, 0.0f };
+        floor.transform.scale = glm::vec3{1.0f };
+        gameObjects.push_back(std::move(floor));
     }
 
 }
