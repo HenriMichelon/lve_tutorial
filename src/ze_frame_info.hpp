@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ze_camera.hpp"
+#include "ze_game_object.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -12,6 +13,7 @@ namespace ze {
         VkCommandBuffer commandBuffer;
         ZeCamera &camera;
         VkDescriptorSet globalDescriptorSet;
+        ZeGameObject::Map &gameObjects;
     };
 
 }

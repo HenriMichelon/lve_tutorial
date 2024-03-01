@@ -33,7 +33,7 @@ namespace ze {
 
         // note : order of declarations matters (must be destroyed before the ZeDevice)
         std::unique_ptr<ZeDescriptorPool> globalPool{};
-        std::vector<ZeGameObject> gameObjects;
+        ZeGameObject::Map gameObjects;
     };
 
 }

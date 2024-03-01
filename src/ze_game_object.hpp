@@ -22,6 +22,7 @@ namespace ze {
     class ZeGameObject {
     public:
         using id_t = unsigned int;
+        using Map = std::unordered_map<id_t, ZeGameObject>;
 
         static ZeGameObject createGameObject() {
             static id_t currentId = 0;

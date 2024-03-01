@@ -47,7 +47,9 @@ namespace ze {
         }
 
         auto globalSetLayout = ZeDescriptorSetLayout::Builder(zeDevice)
-                .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+                .addBinding(0,
+                            VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                            VK_SHADER_STAGE_ALL_GRAPHICS)
                 .build();
 
         std::vector<VkDescriptorSet> globalDescriptorSets(ZeSwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -62,7 +64,9 @@ namespace ze {
         ZeCamera camera{};
 
         auto cameraObject = ZeGameObject::createGameObject();
-        cameraObject.transform.translation.z = -2.5f;
+        cameraObject.transform.translation.z = -2.0f;
+        cameraObject.transform.translation.y = -1.0f;
+        cameraObject.transform.rotation.x = -0.75f;
         KeyboardMovementController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -89,7 +93,8 @@ namespace ze {
                     delta,
                     commandBuffer,
                     camera,
-                    globalDescriptorSets[frameIndex]
+                    globalDescriptorSets[frameIndex],
+                    gameObjects
                 };
 
                 // update
@@ -100,7 +105,7 @@ namespace ze {
 
                 // render
                 zeRenderer.beginSwapChainRenderPass(commandBuffer);
-                simpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
+                simpleRenderSystem.renderGameObjects(frameInfo);
                 zeRenderer.endSwapChainRenderPass(commandBuffer);
                 zeRenderer.endFrame();
             }
@@ -117,19 +122,19 @@ namespace ze {
         gameObject1.model = zeModel;
         gameObject1.transform.translation = { 0.3f, 0.5f, 0.0f };
         gameObject1.transform.scale = glm::vec3{1.2f };
-        gameObjects.push_back(std::move(gameObject1));
+        gameObjects.emplace(gameObject1.getId(), std::move(gameObject1));
 
         auto gameObject2 = ZeGameObject::createGameObject();
         gameObject2.model = zeModel;
         gameObject2.transform.translation = { -0.3f, 0.5f, 0.0f };
         gameObject2.transform.scale = glm::vec3{1.2f };
-        gameObjects.push_back(std::move(gameObject2));
+        gameObjects.emplace(gameObject2.getId(), std::move(gameObject2));
 
         auto floor = ZeGameObject::createGameObject();
         floor.model = zeModel1;
         floor.transform.translation = { 0.0f, 0.5f, 0.0f };
         floor.transform.scale = glm::vec3{1.0f };
-        gameObjects.push_back(std::move(floor));
+        gameObjects.emplace(floor.getId(), std::move(floor));
     }
 
 }
