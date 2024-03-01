@@ -16,14 +16,6 @@
 
 namespace ze {
 
-    struct GlobalUbo {
-        glm::mat4 projection{1.0f};
-        glm::mat4 view{1.0f};
-        glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f}; // RGB + intensity
-        glm::vec3 lightPosition{-1.0f};
-        alignas(16) glm::vec4 lightColor{1.0f}; // RGB + intensity
-    };
-
     ZeApp::ZeApp() {
         globalPool = ZeDescriptorPool::Builder(zeDevice)
                 .setMaxSets(ZeSwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -73,9 +65,9 @@ namespace ze {
         ZeCamera camera{};
 
         auto cameraObject = ZeGameObject::createGameObject();
-        cameraObject.transform.translation.z = -2.0f;
-        cameraObject.transform.translation.y = -1.0f;
-        cameraObject.transform.rotation.x = -0.75f;
+        cameraObject.transform.translation.z = -3.0f;
+        //cameraObject.transform.translation.y = -.5f;
+        //cameraObject.transform.rotation.x = -0.5f;
         KeyboardMovementController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -110,6 +102,7 @@ namespace ze {
                 GlobalUbo ubo{};
                 ubo.projection = camera.getProjection();
                 ubo.view = camera.getView();
+                pointLightSystem.update(frameInfo, ubo);
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameIndex]->flush();
 
@@ -123,7 +116,6 @@ namespace ze {
         }
         vkDeviceWaitIdle(zeDevice.device());
     }
-
 
     void ZeApp::loadGameObjects() {
         std::shared_ptr<ZeModel> zeModel = ZeModel::createModelFromFile(zeDevice, "models/pumpkin_1.obj");
@@ -146,6 +138,27 @@ namespace ze {
         floor.transform.translation = { 0.0f, 0.5f, 0.0f };
         floor.transform.scale = glm::vec3{1.0f };
         gameObjects.emplace(floor.getId(), std::move(floor));
+
+        std::vector<glm::vec3> lightColors{
+                {1.f, .1f, .1f},
+                {.1f, .1f, 1.f},
+                {.1f, 1.f, .1f},
+                {1.f, 1.f, .1f},
+                {.1f, 1.f, 1.f},
+                {1.f, 1.f, 1.f}  //
+        };
+
+        for (int i = 0; i < lightColors.size(); i++) {
+            auto pointLight = ZeGameObject::makePointLight(0.2f);
+            pointLight.color = lightColors[i];
+            auto rotateLight = glm::rotate(
+                    glm::mat4(1.f),
+                    (i * glm::two_pi<float>()) / lightColors.size(),
+                    {0.0f, -1.0f, 0.0f}
+                    );
+            pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.0f, -0.5f, -1.0f, 1.0f));
+            gameObjects.emplace(pointLight.getId(), std::move(pointLight));
+        }
     }
 
 }

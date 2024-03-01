@@ -19,6 +19,7 @@ namespace ze {
         PointLightSystem(const PointLightSystem&) = delete;
         PointLightSystem &operator=(const PointLightSystem&) = delete;
 
+        void update(FrameInfo &frameInfo, GlobalUbo &ubo);
         void render(FrameInfo &frameInfo);
 
     private:

@@ -19,6 +19,10 @@ namespace ze {
         glm::mat3 normalMatrix();
     };
 
+    struct PointLightComponent {
+        float lightIntensity = 1.0f;
+    };
+
     class ZeGameObject {
     public:
         using id_t = unsigned int;
@@ -29,6 +33,12 @@ namespace ze {
             return ZeGameObject{currentId++};
         }
 
+        static ZeGameObject makePointLight(
+                float intensity = 10.0f,
+                float radius = 0.1f,
+                glm::vec3 color = glm::vec3(1.0f)
+                );
+
         id_t getId() { return id; }
 
         ZeGameObject(const ZeGameObject &) = delete;
@@ -36,9 +46,12 @@ namespace ze {
         ZeGameObject(ZeGameObject &&) = default;
         ZeGameObject &operator=(ZeGameObject &&) = delete;
 
-        std::shared_ptr<ZeModel> model {};
         glm::vec3 color{};
         TransformComponent transform{};
+
+        // optional pointer components
+        std::shared_ptr<ZeModel> model{};
+        std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
     private:
         id_t id;
